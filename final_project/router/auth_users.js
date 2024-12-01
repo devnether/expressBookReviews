@@ -33,7 +33,6 @@ const authenticatedUser = (username, password) => {
       }
     }
   }
-
   return match;
 };
 
@@ -73,8 +72,18 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({ message: "Yet to be implemented" });
+  //const isbn = req.params.isbn;
+  return console.log("jola");
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  console.log(isbn);
+  const bookArray = Object.values(books);
+
+  delete bookArray[isbn - 1];
+
+  return res.status(200).json({ message: "Book deleted" });
 });
 
 module.exports.authenticated = regd_users;
