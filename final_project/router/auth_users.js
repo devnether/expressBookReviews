@@ -3,7 +3,12 @@ const jwt = require("jsonwebtoken");
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [];
+let users = [
+  {
+    username: "luis",
+    password: "123",
+  },
+];
 
 const isValid = (username) => {
   //The username is valid if the user exist
@@ -72,18 +77,51 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //const isbn = req.params.isbn;
-  return console.log("jola");
+  const isbn = req.params.isbn;
+  const review = req.body.review;
+
+  // Verifica si el libro con el ISBN existe
+  if (!books[isbn]) {
+    return res
+      .status(404)
+      .json({ message: `Book with ISBN ${isbn} not found.` });
+  }
+
+  // Verifica si el campo 'review' está presente en el cuerpo de la solicitud
+  if (!review) {
+    return res
+      .status(400)
+      .json({ message: "Please provide a review in the request body." });
+  }
+
+  // Asegúrate de que las reseñas existan como un array
+  if (!Array.isArray(books[isbn].reviews)) {
+    books[isbn].reviews = [];
+  }
+
+  // Agrega la reseña al array de reseñas del libro
+  books[isbn].reviews.push(review);
+
+  return res.status(200).json({
+    message: `Review added to the book with ISBN ${isbn}.`,
+    reviews: books[isbn].reviews,
+  });
 });
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
-  console.log(isbn);
-  const bookArray = Object.values(books);
 
-  delete bookArray[isbn - 1];
+  // Verifica si el libro con el ISBN existe
+  if (!books[isbn]) {
+    return res
+      .status(404)
+      .json({ message: `Book with ISBN ${isbn} not found.` });
+  }
 
-  return res.status(200).json({ message: "Book deleted" });
+  // Elimina el libro
+  delete books[isbn];
+
+  return res.status(200).json({ message: `Book with ISBN ${isbn} deleted.` });
 });
 
 module.exports.authenticated = regd_users;
