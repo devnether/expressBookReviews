@@ -110,15 +110,11 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
-
-  // Verifica si el libro con el ISBN existe
   if (!books[isbn]) {
     return res
       .status(404)
       .json({ message: `Book with ISBN ${isbn} not found.` });
   }
-
-  // Elimina el libro
   delete books[isbn];
 
   return res.status(200).json({ message: `Book with ISBN ${isbn} deleted.` });
